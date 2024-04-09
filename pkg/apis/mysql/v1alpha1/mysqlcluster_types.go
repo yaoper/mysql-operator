@@ -218,6 +218,10 @@ type PodSpec struct {
 	// used to take backups with xtrabackup
 	// +optional
 	MySQLOperatorSidecarResources core.ResourceRequirements `json:"mysqlOperatorSidecarResources,omitempty"`
+
+	// PtHeartbeatResources allows you to specify resources for pt-heartbeat container
+	// +optional
+	PtHeartbeatResources core.ResourceRequirements `json:"ptHeartbeatResources,omitempty"`
 }
 
 // VolumeSpec is the desired spec for storing mysql data. Only one of its
@@ -239,6 +243,10 @@ type VolumeSpec struct {
 	// EmptyDir. And represents the PVC specification.
 	// +optional
 	PersistentVolumeClaim *core.PersistentVolumeClaimSpec `json:"persistentVolumeClaim,omitempty"`
+
+	// KeepAfterDelete specifies whether the PVC should be kept after the MysqlCluster is deleted.
+	// +optional
+	KeepAfterDelete bool `json:"keepAfterDelete,omitempty"`
 }
 
 // QueryLimits represents the pt-kill parameters, more info can be found

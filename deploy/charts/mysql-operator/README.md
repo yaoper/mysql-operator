@@ -3,6 +3,7 @@
 This is the helm chart for [mysql-operator](https://github.com/bitpoke/mysql-operator).
 
 ## TL;DR
+
 ```sh
 ## For Helm v3
 helm repo add bitpoke https://helm-charts.bitpoke.io
@@ -10,6 +11,7 @@ helm install mysql-operator bitpoke/mysql-operator
 ```
 
 ## Configuration
+
 The following table contains the configuration parameters for mysql-operator and default values.
 
 | Parameter                       | Description                                                                                   | Default value                                           |
@@ -22,6 +24,8 @@ The following table contains the configuration parameters for mysql-operator and
 | `sidecar57.image.tag`           | Docker image tag for sidecar image for MySQL 5.7                                              | `latest`                                                |
 | `sidecar80.image.repository`    | Docker repository for sidecar image for MySQL 8.0                                             | `docker.io/bitpoke/mysql-operator-sidecar-8.0`          |
 | `sidecar80.image.tag`           | Docker image tag for sidecar image for MySQL 8.0                                              | `latest`                                                |
+| `metricsExporter.image.repository`    | Docker repository for MySQL metrics exporter                                            | `docker.io/prom/mysqld-exporter`                        |
+| `metricsExporter.image.tag`           | Docker image tag for MySQL metrics exporter                                             | `v0.13.0`                                                      |
 | `imagePullSecrets`              | Controller image pull secrets                                                                 | `[]`                                                    |
 | `extraEnv`                      | MySQL Operator controller extra environment variables                                         | `[]`                                                    |
 | `extraArgs`                     | MySQL Operator controller extra command line arguments                                        | `[]`                                                    |
@@ -34,9 +38,8 @@ The following table contains the configuration parameters for mysql-operator and
 | `podSecurityContext`            | The pod security context. `65532` is the UID/GID for the nonroot user in the official images  | `{runAsNonRoot: true, runAsUser: 65532, runAsGroup: 65532, fsGroup: 65532}` |
 | `securityContext`               | Security context for the MySQL Operator container                                             | `{}`                                                    |
 | `podDisruptionBudget.enabled`   | Specifies whether a PodDisruptionBudget for the MySQL operator StatefulSet should be created. <br /> _NOTE_ it only takes effect if `replicaCount` is greated than 1. | `true` |
-| `podDisruptionBudget.minAvailable`   | ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/#specifying-a-poddisruptionbudget | `empty` |
-| `podDisruptionBudget.maxUnavailable` | ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/#specifying-a-poddisruptionbudget | `1`     |
-| `podSecurityPolicy.enabled`     | Specified whether a PodSecurityPolicy should be created. PSP are deprecated and this will be removed in the future | `false` |
+| `podDisruptionBudget.minAvailable`   | ref: <https://kubernetes.io/docs/tasks/run-application/configure-pdb/#specifying-a-poddisruptionbudget> | `empty` |
+| `podDisruptionBudget.maxUnavailable` | ref: <https://kubernetes.io/docs/tasks/run-application/configure-pdb/#specifying-a-poddisruptionbudget> | `1`     |
 | `nodeSelector`                  | MySQL Operator pod nodeSelector                                                               | `{}`                                                    |
 | `tolerations`                   | MySQL Operator pod tolerations                                                                | `[]`                                                    |
 | `affinity`                      | MySQL Operator pod affinity                                                                   | `{}`                                                    |

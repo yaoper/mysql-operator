@@ -155,6 +155,19 @@ var _ = Describe("MysqlBackupCron controller", func() {
 			Expect(cron.Entries()).To(haveCronJob(cluster.Name, newSchedule))
 		})
 
+		It("should remove entry after set schedule to empty", func() {
+			// update cluster scheduler
+			cluster.Spec.BackupSchedule = ""
+
+			Expect(c.Update(context.TODO(), cluster)).To(Succeed())
+
+			// expect an reconcile event
+			Eventually(requests, timeout).Should(Receive(Equal(expectedRequest)))
+
+			// check cron entry for right scheduler
+			Expect(cron.Entries()).ToNot(haveCronJob(cluster.Name, schedule))
+		})
+
 		It("should be just one entry for a cluster", func() {
 			// update cluster spec
 			cluster.Spec.MysqlConf = map[string]intstr.IntOrString{
@@ -185,6 +198,30 @@ var _ = Describe("MysqlBackupCron controller", func() {
 					"BackupScheduleJobsHistoryLimit": PointTo(Equal(limit)),
 				})),
 			})))
+		})
+
+		It("should update backup remote delete policy", func() {
+			cluster.Spec.BackupRemoteDeletePolicy = api.Delete
+			Expect(c.Update(context.TODO(), cluster)).To(Succeed())
+			Eventually(requests, timeout).Should(Receive(Equal(expectedRequest)))
+			Expect(cron.Entries()).To(ContainElement(MatchFields(IgnoreExtras, Fields{
+				"Job": PointTo(MatchFields(IgnoreExtras, Fields{
+					"ClusterName":              Equal(cluster.Name),
+					"BackupRemoteDeletePolicy": Equal(api.Delete),
+				})),
+			})))
+
+			cluster.Spec.BackupRemoteDeletePolicy = api.Retain
+			Expect(c.Update(context.TODO(), cluster)).To(Succeed())
+			Eventually(requests, timeout).Should(Receive(Equal(expectedRequest)))
+			Expect(cron.Entries()).To(ContainElement(MatchFields(IgnoreExtras, Fields{
+				"Job": PointTo(MatchFields(IgnoreExtras, Fields{
+					"ClusterName":              Equal(cluster.Name),
+					"BackupRemoteDeletePolicy": Equal(api.Retain),
+				})),
+			})))
+
+			Expect(cron.Entries()).To(HaveLen(1))
 		})
 
 		When("backup is executed once per second", func() {

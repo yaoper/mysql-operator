@@ -76,6 +76,8 @@ rules:
     - mysql.presslabs.org
   resources:
     - mysqlbackups
+    - mysqlbackups/finalizers
+    - mysqlbackups/status
   verbs:
     - create
     - delete
@@ -88,6 +90,7 @@ rules:
     - mysql.presslabs.org
   resources:
     - mysqlclusters
+    - mysqlclusters/finalizers
     - mysqlclusters/status
   verbs:
     - create
@@ -101,6 +104,7 @@ rules:
     - mysql.presslabs.org
   resources:
     - mysqldatabases
+    - mysqldatabases/finalizers
     - mysqldatabases/status
   verbs:
     - create

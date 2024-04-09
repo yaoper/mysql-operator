@@ -21,6 +21,11 @@ sidecar80:
     # Overrides the image tag whose default is the chart appVersion.
     tag: ""
 
+metricsExporter:
+  image:
+    repository: docker.io/prom/mysqld-exporter
+    tag: "v0.13.0"
+
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
@@ -61,12 +66,6 @@ securityContext: {}
 podDisruptionBudget:
   enabled: true
   maxUnavailable: 1
-
-podSecurityPolicy:
-  enabled: false
-  annotations:
-    seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'docker/default'
-    seccomp.security.alpha.kubernetes.io/defaultProfileName:  'docker/default'
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

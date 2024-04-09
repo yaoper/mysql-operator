@@ -351,6 +351,7 @@ func (s *sfsSyncer) ensureInitContainersSpec() []core.Container {
 		s.cluster.GetSidecarImage(),
 		[]string{"clone-and-init"},
 	)
+	cloneInit.Resources = s.ensureResources(containerCloneAndInitName)
 	initCs = append(initCs, cloneInit)
 
 	// add init container for MySQL if docker image supports this
@@ -581,7 +582,7 @@ func (s *sfsSyncer) ensureVolumeClaimTemplates(in []core.PersistentVolumeClaim) 
 
 	data.Name = dataVolumeName
 
-	if initPvc {
+	if initPvc && !s.cluster.Spec.VolumeSpec.KeepAfterDelete {
 		// This can be set only when creating new PVC. It ensures that PVC can be
 		// terminated after deleting parent MySQL cluster
 		trueVar := true
@@ -672,32 +673,28 @@ func (s *sfsSyncer) getLabels(extra map[string]string) map[string]string {
 }
 
 func (s *sfsSyncer) ensureResources(name string) core.ResourceRequirements {
-	limits := core.ResourceList{
-		core.ResourceCPU: resource.MustParse("100m"),
-	}
-	requests := core.ResourceList{
-		core.ResourceCPU:    resource.MustParse("10m"),
-		core.ResourceMemory: resource.MustParse("32Mi"),
-	}
-
 	switch name {
 	case containerExporterName:
 		return s.cluster.Spec.PodSpec.MetricsExporterResources
 
-	case containerMySQLInitName, containerMysqlName:
+	case containerMySQLInitName, containerCloneAndInitName, containerMysqlName:
 		return s.cluster.Spec.PodSpec.Resources
 
 	case containerHeartBeatName:
-		limits[core.ResourceMemory] = resource.MustParse("64Mi")
+		return s.cluster.Spec.PodSpec.PtHeartbeatResources
 
 	case containerSidecarName:
 		return s.cluster.Spec.PodSpec.MySQLOperatorSidecarResources
 
 	}
-
 	return core.ResourceRequirements{
-		Limits:   limits,
-		Requests: requests,
+		Limits: core.ResourceList{
+			core.ResourceCPU: resource.MustParse("100m"),
+		},
+		Requests: core.ResourceList{
+			core.ResourceCPU:    resource.MustParse("10m"),
+			core.ResourceMemory: resource.MustParse("32Mi"),
+		},
 	}
 }
 

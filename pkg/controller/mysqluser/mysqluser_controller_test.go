@@ -120,6 +120,7 @@ var _ = Describe("MySQL user controller", func() {
 			BeforeEach(func() {
 				// Create prerequisite resources
 				cluster = factories.NewMySQLCluster(
+					factories.WithClusterReadyCondition(),
 					factories.CreateMySQLClusterSecret(c, &corev1.Secret{}),
 					factories.CreateMySQLClusterInK8s(c),
 				)
@@ -158,7 +159,7 @@ var _ = Describe("MySQL user controller", func() {
 					return nil
 				}
 
-				fakeSQL.AssertDSN(expectedDSN)
+				fakeSQL.AddExpectedDSN(expectedDSN)
 				// the create user runs twice
 				fakeSQL.AddExpectedCalls(expectedQueryRunnerCall)
 				fakeSQL.AddExpectedCalls(expectedQueryRunnerCall)
@@ -201,6 +202,7 @@ var _ = Describe("MySQL user controller", func() {
 			BeforeEach(func() {
 				// Create prerequisite resources
 				cluster = factories.NewMySQLCluster(
+					factories.WithClusterReadyCondition(),
 					factories.CreateMySQLClusterSecret(c, &corev1.Secret{}),
 					factories.CreateMySQLClusterInK8s(c),
 				)
@@ -262,7 +264,7 @@ var _ = Describe("MySQL user controller", func() {
 					return nil
 				}
 
-				fakeSQL.AssertDSN(expectedDSN)
+				fakeSQL.AddExpectedDSN(expectedDSN)
 				fakeSQL.AddExpectedCalls(expectedQueryRunnerCall)
 				fakeSQL.AddExpectedCalls(expectedQueryRunnerCall)
 
@@ -302,6 +304,7 @@ var _ = Describe("MySQL user controller", func() {
 
 				// Create prerequisite resources
 				cluster = factories.NewMySQLCluster(
+					factories.WithClusterReadyCondition(),
 					factories.CreateMySQLClusterSecret(c, &corev1.Secret{}),
 					factories.CreateMySQLClusterInK8s(c),
 				)
@@ -394,7 +397,9 @@ var _ = Describe("MySQL user controller", func() {
 			BeforeEach(func() {
 				// Create prerequisite resources
 				cluster = factories.NewMySQLCluster(
-					factories.CreateMySQLClusterSecret(c, &corev1.Secret{}), factories.CreateMySQLClusterInK8s(c),
+					factories.WithClusterReadyCondition(),
+					factories.CreateMySQLClusterSecret(c, &corev1.Secret{}),
+					factories.CreateMySQLClusterInK8s(c),
 				)
 
 				// The mysql user creation fails
@@ -444,6 +449,7 @@ var _ = Describe("MySQL user controller", func() {
 		BeforeEach(func() {
 			// Create prerequisite resources
 			cluster = factories.NewMySQLCluster(
+				factories.WithClusterReadyCondition(),
 				factories.CreateMySQLClusterSecret(c, &corev1.Secret{}),
 				factories.CreateMySQLClusterInK8s(c),
 			)
@@ -490,7 +496,7 @@ var _ = Describe("MySQL user controller", func() {
 					return deletionResult
 				}
 
-				fakeSQL.AssertDSN(expectedDSN)
+				fakeSQL.AddExpectedDSN(expectedDSN)
 				fakeSQL.AddExpectedCalls(expectedQueryRunnerCall)
 
 				Expect(c.Delete(context.TODO(), user.Unwrap())).To(Succeed())
